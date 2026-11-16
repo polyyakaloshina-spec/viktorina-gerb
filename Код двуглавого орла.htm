@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Код двуглавого орла 🦅</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            /* Фоновый узор в виде едва заметного герба */
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='40' fill='rgba(0, 51, 102, 0.03)'%3E🦅%3C/text%3E%3C/svg%3E");
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(0,51,102,0.02) 90deg, transparent 180deg, rgba(0,51,102,0.02) 270deg);
+            pointer-events: none;
+        }
+        h1 {
+            color: #003366;
+            text-align: center;
+            border-bottom: 2px solid #003366;
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 2em;
+        }
+        .intro {
+            background-color: #e6f2ff;
+            padding: 20px;
+            border-left: 5px solid #003366;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.1em;
+            border-radius: 5px;
+        }
+        .question-block {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .question-block.correct {
+            background-color: #d4edda;
+            border-color: #28a745;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.2);
+        }
+        .question-block.incorrect {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            box-shadow: 0 0 10px rgba(220, 53, 69, 0.2);
+        }
+        .question {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+        .option-btn {
+            padding: 12px;
+            background-color: #003366;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+            transition: background-color 0.2s, transform 0.1s;
+            font-size: 1em;
+        }
+        .option-btn:hover:not(.disabled) {
+            background-color: #00234d;
+            transform: translateY(-2px);
+        }
+        .option-btn.disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .feedback {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            display: none;
+            font-size: 0.95em;
+        }
+        .feedback.correct {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .feedback.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .start-btn {
+            display: block;
+            width: 220px;
+            margin: 40px auto 0;
+            padding: 15px;
+            background-color: #003366;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .start-btn:hover {
+            background-color: #00234d;
+        }
+        .results-screen {
+            text-align: center;
+            display: none;
+            padding: 40px 20px;
+        }
+        .results-screen h2 {
+            color: #003366;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .badge {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 30px;
+            display: inline-block;
+            margin: 20px 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        .badge-0 { background-color: #808080; }
+        .badge-1 { background-color: #20B2AA; }
+        .badge-2 { background-color: #4169E1; }
+        .badge-3 { background-color: #DAA520; }
+        .badge-4 { background-color: #8B0000; }
+        .restart-btn {
+            margin-top: 30px;
+            padding: 12px 30px;
+            background-color: #003366;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .restart-btn:hover {
+            background-color: #00234d;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🦅 Код двуглавого орла</h1>
+    
+    <div id="intro-screen">
+        <div class="intro">
+            <p>Уважаемые участники! 👋</p>
+            <p>30 ноября в Российской Федерации отмечается День Государственного герба — одного из главных официальных символов страны, наряду с Государственным флагом  и Государственным гимном. Государственный герб Российской Федерации, утверждённый 30 ноября 1993 года, отражает неразрывность и преемственность отечественной истории, а его символика имеет глубокие исторические корни.</p>
+            <p>Настоящая викторина посвящена истории, символике и правовым основам Государственного герба Российской Федерации. Вам предстоит ответить на 20 вопросов: 14 вопросов с вариантами ответа и 6 вопросов формата «Правда или ложь». Каждый правильный ответ оценивается в 1 балл.</p>
+            <p>Желаем успехов! 💪</p>
+        </div>
+        <button class="start-btn" onclick="startQuiz()">Проверить свои знания</button>
+    </div>
+
+    <div id="quiz-screen">
+        <!-- Вопросы будут добавлены сюда скриптом -->
+    </div>
+
+    <div id="results-screen" class="results-screen">
+        <h2>🎖️ Результаты</h2>
+        <p>Вы ответили правильно на <span id="score">0</span> из 20 вопросов.</p>
+        <div id="badge" class="badge"></div>
+        <p id="title"></p>
+        <button class="restart-btn" onclick="location.reload()">🔄 Пройти заново</button>
+    </div>
+</div>
+
+<script>
+let currentQuestion = 0;
+let score = 0;
+
+const questions = [
+    {
+        q: "1. Какой день в России ежегодно отмечается как День Государственного герба?",
+        options: ["А) 30 ноября", "Б) 12 июня", "В) 22 августа", "Г) 4 ноября"],
+        answer: "А) 30 ноября",
+        type: "choice"
+    },
+    {
+        q: "2. Кто подписал указ об утверждении современного Государственного герба Российской Федерации?",
+        options: ["А) Михаил Горбачёв", "Б) Борис Ельцин", "В) Владимир Путин", "Г) Дмитрий Медведев"],
+        answer: "Б) Борис Ельцин",
+        type: "choice"
+    },
+    {
+        q: "3. Какие предметы орёл держит в лапах и как они распределены?",
+        options: ["А) В правой — держава, в левой — скипетр", "Б) В правой — скипетр, в левой — держава", "В) В обеих лапах — скипетры", "Г) В правой — меч, в левой — держава"],
+        answer: "Б) В правой — скипетр, в левой — держава",
+        type: "choice"
+    },
+    {
+        q: "4. Кого поражает серебряный всадник, изображённый на груди орла?",
+        options: ["А) Чёрного дракона", "Б) Змея", "В) Льва", "Г) Медведя"],
+        answer: "А) Чёрного дракона",
+        type: "choice"
+    },
+    {
+        q: "5. При каком правителе двуглавый орёл впервые появился на русском государственном символе?",
+        options: ["А) При Петре I", "Б) При Иване III", "В) При Иване Грозном", "Г) При Екатерине I"],
+        answer: "Б) При Иване III",
+        type: "choice"
+    },
+    {
+        q: "6. Что, по версии геральдистов, символизирует двуглавый орёл?",
+        options: ["А) Победу над врагом", "Б) Расположение страны в двух частях света — Европе и Азии", "В) Две столицы государства", "Г) Союз церкви и государства"],
+        answer: "Б) Расположение страны в двух частях света — Европе и Азии",
+        type: "choice"
+    },
+    {
+        q: "7. Какие символы пришли на смену двуглавому орлу после Октябрьской революции 1917 года?",
+        options: ["А) Скипетр и держава", "Б) Серп и молот", "В) Звезда и знамя", "Г) Всадник и дракон"],
+        answer: "Б) Серп и молот",
+        type: "choice"
+    },
+    {
+        q: "8. Какой федеральный закон закрепляет описание Государственного герба Российской Федерации?",
+        options: ["А) Федеральный закон «О государственных символах»", "Б) Федеральный конституционный закон «О Государственном гербе Российской Федерации»", "В) Федеральный закон «О государственной символике»", "Г) Конституционный закон «О флаге и гербе»"],
+        answer: "Б) Федеральный конституционный закон «О Государственном гербе Российской Федерации»",
+        type: "choice"
+    },
+    {
+        q: "9. В каком году впервые документально засвидетельствовано использование двуглавого орла как государственной эмблемы?",
+        options: ["А) 1497", "Б) 1547", "В) 1726", "Г) 1857"],
+        answer: "А) 1497",
+        type: "choice"
+    },
+    {
+        q: "10. Какой знак появился между головами двуглавого орла в правление царя Фёдора Ивановича?",
+        options: ["А) Голгофский крест (знак страстей Христовых)", "Б) Звезда", "В) Полумесяц", "Г) Держава"],
+        answer: "А) Голгофский крест (знак страстей Христовых)",
+        type: "choice"
+    },
+    {
+        q: "11. Какое описание герба было закреплено указом императрицы Екатерины I в 1726 году?",
+        options: ["А) «Орел черный с распростертыми крыльями, в желтом поле, на нем ездец в красном поле»", "Б) «Орел золотой с поднятыми крыльями, в красном поле, на нем всадник в синем плаще»", "В) «Орел серебряный с опущенными крыльями, в белом поле, на нем всадник с копьём»", "Г) «Орел черный с одной короной, в желтом поле, на нем всадник на белом коне»"],
+        answer: "А) «Орел черный с распростертыми крыльями, в желтом поле, на нем ездец в красном поле»",
+        type: "choice"
+    },
+    {
+        q: "12. Что символизируют три короны на гербе России?",
+        options: ["А) Три части света", "Б) Союз трёх ветвей власти: законодательной, исполнительной и судебной", "В) Три века истории", "Г) Три города"],
+        answer: "Б) Союз трёх ветвей власти: законодательной, исполнительной и судебной",
+        type: "choice"
+    },
+    {
+        q: "13. Сколько лет двуглавый орёл отсутствовал на гербе России после 1917 года?",
+        options: ["А) 50 лет", "Б) 75 лет", "В) 100 лет", "Г) 25 лет"],
+        answer: "Б) 75 лет",
+        type: "choice"
+    },
+    {
+        q: "14. На основе чего строятся эмблемы органов федеральной исполнительной власти — министерств и ведомств?",
+        options: ["А) На основе Государственного флага", "Б) На основе Государственного герба", "В) На основе Государственного гимна", "Г) На основе Конституции"],
+        answer: "Б) На основе Государственного герба",
+        type: "choice"
+    },
+    {
+        q: "15. Официальная трактовка элементов герба России закреплена в Конституции.",
+        options: ["Правда", "Ложь"],
+        answer: "Ложь",
+        type: "choice"
+    },
+    {
+        q: "16. В 1857 году произошло Высочайшее утверждение всего комплекта государственных гербов — Большого, Среднего и Малого.",
+        options: ["Правда", "Ложь"],
+        answer: "Правда",
+        type: "choice"
+    },
+    {
+        q: "17. Красный цвет на гербе символизирует небо, свободу и верность.",
+        options: ["Правда", "Ложь"],
+        answer: "Ложь",
+        type: "choice"
+    },
+    {
+        q: "18. Щит на гербе России имеет четырёхугольную форму с закруглёнными нижними углами и заострён в оконечности.",
+        options: ["Правда", "Ложь"],
+        answer: "Правда",
+        type: "choice"
+    },
+    {
+        q: "19. Двуглавый орёл впервые был утверждён Иваном IV в 1547 году.",
+        options: ["Правда", "Ложь"],
+        answer: "Ложь",
+        type: "choice"
+    },
+    {
+        q: "20. Восстановление двуглавого орла как Государственного герба олицетворяет неразрывность и преемственность отечественной истории.",
+        options: ["Правда", "Ложь"],
+        answer: "Правда",
+        type: "choice"
+    }
+];
+
+function startQuiz() {
+    document.getElementById('intro-screen').style.display = 'none';
+    document.getElementById('quiz-screen').style.display = 'block';
+    showQuestion();
+}
+
+function showQuestion() {
+    const quizContainer = document.getElementById('quiz-screen');
+    quizContainer.innerHTML = '';
+
+    if (currentQuestion >= questions.length) {
+        showResults();
+        return;
+    }
+
+    const qData = questions[currentQuestion];
+    const block = document.createElement('div');
+    block.className = 'question-block';
+    block.id = 'q-block-' + currentQuestion;
+
+    const questionText = document.createElement('div');
+    questionText.className = 'question';
+    questionText.innerHTML = qData.q;
+    block.appendChild(questionText);
+
+    const optionsDiv = document.createElement('div');
+    optionsDiv.className = 'options';
+    
+    let opts = [];
+    if (qData.options) {
+        opts = qData.options;
+    } else {
+        // Если вариантов нет в массиве, берем "Правда" и "Ложь" из ответа
+        opts = ["Правда", "Ложь"];
+    }
+
+    opts.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = opt;
+        btn.onclick = () => checkAnswer(opt);
+        optionsDiv.appendChild(btn);
+    });
+    block.appendChild(optionsDiv);
+
+    const feedback = document.createElement('div');
+    feedback.className = 'feedback';
+    feedback.id = 'feedback-' + currentQuestion;
+    block.appendChild(feedback);
+
+    quizContainer.appendChild(block);
+}
+
+function checkAnswer(selected) {
+    const qData = questions[currentQuestion];
+    const block = document.getElementById('q-block-' + currentQuestion);
+    const feedback = document.getElementById('feedback-' + currentQuestion);
+    const buttons = block.getElementsByClassName('option-btn');
+
+    // Отключаем кнопки
+    for(let btn of buttons) {
+        btn.classList.add('disabled');
+    }
+
+    if (selected === qData.answer) {
+        score++;
+        block.classList.add('correct');
+        feedback.classList.add('correct');
+        feedback.innerHTML = "✅ Верно! " + qData.answer;
+        feedback.style.display = 'block';
+    } else {
+        block.classList.add('incorrect');
+        feedback.classList.add('incorrect');
+        feedback.innerHTML = "❌ Неверно. Правильный ответ: " + qData.answer;
+        feedback.style.display = 'block';
+    }
+
+    // Через 2 секунды переходим к следующему
+    setTimeout(() => {
+        currentQuestion++;
+        showQuestion();
+    }, 2000);
+}
+
+function showResults() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    const resultsScreen = document.getElementById('results-screen');
+    
+    document.getElementById('score').innerText = score;
+    
+    const badge = document.getElementById('badge');
+    const title = document.getElementById('title');
+
+    if (score >= 0 && score <= 5) {
+        badge.className = 'badge badge-0';
+        badge.innerText = 'Юный друг герба';
+        title.innerText = 'Вы ответили правильно на 0–5 вопросов. Не расстраивайтесь — это только начало пути! 🌱';
+    } else if (score >= 6 && score <= 9) {
+        badge.className = 'badge badge-1';
+        badge.innerText = 'Начинающий геральдист';
+        title.innerText = 'Вы только начинаете знакомство с историей герба, и это отличное начало. 📚';
+    } else if (score >= 10 && score <= 13) {
+        badge.className = 'badge badge-2';
+        badge.innerText = 'Исследователь герба';
+        title.innerText = 'Основы вы знаете, но некоторые факты стоит закрепить. 🔍';
+    } else if (score >= 14 && score <= 17) {
+        badge.className = 'badge badge-3';
+        badge.innerText = 'Знаток государственной символики';
+        title.innerText = 'Вы хорошо знаете герб России и его историю, но несколько деталей ещё можно уточнить. 👍';
+    } else if (score >= 18 && score <= 20) {
+        badge.className = 'badge badge-4';
+        badge.innerText = 'Эксперт кода двуглавого орла';
+        title.innerText = 'Вы отлично знаете историю праздника, символику и историю герба России. Вас можно смело назвать знатоком государственной символики! 🏆';
+    }
+
+    resultsScreen.style.display = 'block';
+}
+</script>
+
+</body>
+</html>
